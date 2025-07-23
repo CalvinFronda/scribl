@@ -1,16 +1,53 @@
-import { StrictMode } from "react";
-import { RouterProvider } from "react-router";
+import React, { useState } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
+import { Header } from './components/layout/Header';
+import { LandingPage } from './pages/LandingPage';
+import { Dashboard } from './pages/Dashboard';
+import { AuthForm } from './components/auth/AuthForm';
 
-import "./App.css";
-
-import "./index.css";
-import { router } from "./routes/routes.tsx";
+type View = 'landing' | 'dashboard';
 
 function App() {
+  const [currentView, setCurrentView] = useState<View>('landing');
+  const [showAuthForm, setShowAuthForm] = useState(false);
+
+  const handleAuthClick = () => {
+    setShowAuthForm(true);
+  };
+
+  const handleAuthClose = () => {
+    setShowAuthForm(false);
+  };
+
+  const handleDashboardClick = () => {
+    setCurrentView('dashboard');
+  };
+
+  const handleBackToLanding = () => {
+    setCurrentView('landing');
+  };
+
   return (
-    <StrictMode>
-      <RouterProvider router={router} />
-    </StrictMode>
+    <AuthProvider>
+      <div className="min-h-screen bg-background">
+        <Header 
+          onAuthClick={handleAuthClick}
+          onDashboardClick={handleDashboardClick}
+        />
+        
+        <main>
+          {currentView === 'landing' ? (
+            <LandingPage onAuthClick={handleAuthClick} />
+          ) : (
+            <Dashboard onBack={handleBackToLanding} />
+          )}
+        </main>
+
+        {showAuthForm && (
+          <AuthForm onClose={handleAuthClose} />
+        )}
+      </div>
+    </AuthProvider>
   );
 }
 
