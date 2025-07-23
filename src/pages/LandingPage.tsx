@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { usePrompts } from '../hooks/usePrompts';
-import { usePublicResponses } from '../hooks/useResponses';
-import { supabase } from '../lib/supabase';
-import { PromptCard } from '../components/prompts/PromptCard';
-import { ResponseForm } from '../components/responses/ResponseForm';
-import { PublicResponsesList } from '../components/responses/PublicResponsesList';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
-import { LoadingSpinner } from '../components/ui/LoadingSpinner';
-import { Button } from '../components/ui/Button';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { usePrompts } from "../hooks/usePrompts";
+import { usePublicResponses } from "../hooks/useResponses";
+import { supabase } from "../lib/supabase";
+import { PromptCard } from "../components/prompts/PromptCard";
+import { ResponseForm } from "../components/responses/ResponseForm";
+import { PublicResponsesList } from "../components/responses/PublicResponsesList";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/Card";
+import { LoadingSpinner } from "../components/ui/LoadingSpinner";
+import { Button } from "../components/ui/Button";
 
 interface LandingPageProps {
   onAuthClick: () => void;
@@ -17,7 +22,11 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
   const { user } = useAuth();
   const { currentPrompt, loading: promptLoading } = usePrompts();
-  const { responses, loading: responsesLoading, refetch: refetchResponses } = usePublicResponses(currentPrompt?.id);
+  const {
+    responses,
+    loading: responsesLoading,
+    refetch: refetchResponses,
+  } = usePublicResponses(currentPrompt?.id);
   const [userResponse, setUserResponse] = useState<any>(null);
   const [loadingUserResponse, setLoadingUserResponse] = useState(false);
 
@@ -33,19 +42,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
     setLoadingUserResponse(true);
     try {
       const { data, error } = await supabase
-        .from('responses')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('prompt_id', currentPrompt.id)
+        .from("responses")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("prompt_id", currentPrompt.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         throw error;
       }
 
       setUserResponse(data);
     } catch (error) {
-      console.error('Error checking user response:', error);
+      console.error("Error checking user response:", error);
     } finally {
       setLoadingUserResponse(false);
     }
@@ -95,7 +104,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
               <Card className="text-center">
                 <CardContent className="py-8">
                   <LoadingSpinner className="mx-auto mb-4" />
-                  <p className="text-muted-foreground">Checking your response...</p>
+                  <p className="text-muted-foreground">
+                    Checking your response...
+                  </p>
                 </CardContent>
               </Card>
             ) : userResponse ? (
@@ -104,22 +115,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
                   <CardTitle>Your Response</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="leading-relaxed mb-4">{userResponse.response_text}</p>
+                  <p className="leading-relaxed mb-4">
+                    {userResponse.response_text}
+                  </p>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">
-                      Submitted on {new Date(userResponse.created_at).toLocaleDateString()}
-                      {userResponse.updated_at !== userResponse.created_at && 
-                        ` • Updated ${new Date(userResponse.updated_at).toLocaleDateString()}`}
+                      Submitted on{" "}
+                      {new Date(userResponse.created_at).toLocaleDateString()}
+                      {userResponse.updated_at !== userResponse.created_at &&
+                        ` • Updated ${new Date(
+                          userResponse.updated_at
+                        ).toLocaleDateString()}`}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {userResponse.is_public ? 'Public' : 'Private'}
+                      {userResponse.is_public ? "Public" : "Private"}
                     </span>
                   </div>
                 </CardContent>
               </Card>
             ) : (
-              <ResponseForm 
-                promptId={currentPrompt.id} 
+              <ResponseForm
+                promptId={currentPrompt.id}
                 onSubmit={handleResponseSubmit}
               />
             )}
@@ -129,7 +145,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
             <CardContent className="py-8">
               <h3 className="text-xl font-bold mb-4">Ready to Write?</h3>
               <p className="text-muted-foreground mb-6">
-                Join our community of writers and share your response to today's prompt.
+                Join our community of writers and share your response to today's
+                prompt.
               </p>
               <Button onClick={onAuthClick} size="lg">
                 Sign Up to Write
@@ -138,10 +155,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
           </Card>
         )}
 
-        <PublicResponsesList 
-          responses={responses} 
-          loading={responsesLoading} 
-        />
+        <PublicResponsesList responses={responses} loading={responsesLoading} />
       </div>
     </div>
   );
