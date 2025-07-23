@@ -29,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-4xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-2" onClick={onHomeClick}>
           <Edit3 className="h-8 w-8 text-primary" />
-          <h1 className="text-2xl font-bold">Skribl</h1>
+          <h1 className="text-2xl font-bold">Scribl</h1>
         </div>
 
         <div className="flex items-center space-x-3">
