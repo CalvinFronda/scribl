@@ -1,8 +1,17 @@
+import { StrictMode } from "react";
+import { RouterProvider } from "react-router";
+
 import "./App.css";
-import HomePage from "./pages/Home";
+
+import "./index.css";
+import { router } from "./routes/routes.tsx";
 
 function App() {
-  return <div>Scribl</div>;
+  return (
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>
+  );
 }
 
 export default App;
