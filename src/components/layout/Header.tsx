@@ -1,20 +1,14 @@
-import React from "react";
+import { useState } from "react";
 import { Edit3, LogOut, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
+import { AuthForm } from "../auth/AuthForm";
+import { useNavigate } from "react-router";
 
-interface HeaderProps {
-  onHomeClick: () => void;
-  onAuthClick: () => void;
-  onDashboardClick: () => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({
-  onHomeClick,
-  onAuthClick,
-  onDashboardClick,
-}) => {
+export const Header = () => {
   const { user, signOut } = useAuth();
+  const [showAuthForm, setShowAuthForm] = useState(false);
+  let navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
@@ -24,10 +18,21 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const handleAuthClick = () => {
+    setShowAuthForm(true);
+  };
+
+  const handleAuthClose = () => {
+    setShowAuthForm(false);
+  };
+
   return (
     <header className="border-b bg-background px-4 py-4">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
-        <div className="flex items-center space-x-2" onClick={onHomeClick}>
+        <div
+          className="flex items-center space-x-2"
+          onClick={() => navigate("/")}
+        >
           <Edit3 className="h-8 w-8 text-primary" />
           <h1 className="text-2xl font-bold">Scribl</h1>
         </div>
@@ -35,7 +40,11 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center space-x-3">
           {user ? (
             <>
-              <Button variant="outline" size="sm" onClick={onDashboardClick}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/dashboard")}
+              >
                 <User className="h-4 w-4 mr-2" />
                 Dashboard
               </Button>
@@ -45,9 +54,10 @@ export const Header: React.FC<HeaderProps> = ({
               </Button>
             </>
           ) : (
-            <Button onClick={onAuthClick}>Get Started</Button>
+            <Button onClick={handleAuthClick}>Get Started</Button>
           )}
         </div>
+        {showAuthForm && <AuthForm onClose={handleAuthClose} />}
       </div>
     </header>
   );

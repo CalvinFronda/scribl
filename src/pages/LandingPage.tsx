@@ -14,12 +14,10 @@ import {
 } from "../components/ui/Card";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner";
 import { Button } from "../components/ui/Button";
+import { AuthForm } from "@/components/auth/AuthForm";
 
-interface LandingPageProps {
-  onAuthClick: () => void;
-}
-
-export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
+const LandingPage = () => {
+  const [showAuthForm, setShowAuthForm] = useState(false);
   const { user } = useAuth();
   const { currentPrompt, loading: promptLoading } = usePrompts();
   const {
@@ -35,6 +33,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
       checkUserResponse();
     }
   }, [user, currentPrompt]);
+
+  const handleAuthClick = () => {
+    setShowAuthForm(true);
+  };
+
+  const handleAuthClose = () => {
+    setShowAuthForm(false);
+  };
 
   const checkUserResponse = async () => {
     if (!user || !currentPrompt) return;
@@ -148,7 +154,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
                 Join our community of writers and share your response to today's
                 prompt.
               </p>
-              <Button onClick={onAuthClick} size="lg">
+              <Button onClick={handleAuthClick} size="lg">
                 Sign Up to Write
               </Button>
             </CardContent>
@@ -157,6 +163,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthClick }) => {
 
         <PublicResponsesList responses={responses} loading={responsesLoading} />
       </div>
+      {showAuthForm && <AuthForm onClose={handleAuthClose} />}
     </div>
   );
 };
+
+export default LandingPage;
