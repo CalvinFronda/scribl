@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Calendar, Flame, TrendingUp, Clock } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
-import { UserStats as UserStatsType } from '../../types';
-import { Card, CardContent } from '../ui/Card';
-import { LoadingSpinner } from '../ui/LoadingSpinner';
+import React, { useEffect, useState } from "react";
+import { Calendar, Flame, TrendingUp, Clock } from "lucide-react";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../contexts/AuthContext";
+import { UserStats as UserStatsType } from "../../types";
+import { Card, CardContent } from "../ui/Card";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 export const UserStats: React.FC = () => {
   const [stats, setStats] = useState<UserStatsType | null>(null);
@@ -22,19 +22,19 @@ export const UserStats: React.FC = () => {
 
     try {
       setLoading(true);
-      
+
       // Get total submissions
       const { count: totalSubmissions } = await supabase
-        .from('responses')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id);
+        .from("responses")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
 
       // Get responses ordered by date to calculate streaks
       const { data: responses } = await supabase
-        .from('responses')
-        .select('created_at, prompts(date)')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .from("responses")
+        .select("created_at, prompts(date)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
 
       // Calculate streaks
       let currentStreak = 0;
@@ -43,21 +43,23 @@ export const UserStats: React.FC = () => {
 
       if (responses && responses.length > 0) {
         const today = new Date();
-        const dates = responses.map(r => new Date(r.created_at));
-        
+        const dates = responses.map((r) => new Date(r.created_at));
+
         // Sort dates in descending order
         dates.sort((a, b) => b.getTime() - a.getTime());
-        
+
         // Calculate current streak from today backwards
-        let currentDate = new Date(today);
+        const currentDate = new Date(today);
         currentDate.setHours(0, 0, 0, 0);
-        
+
         for (const responseDate of dates) {
           const respDate = new Date(responseDate);
           respDate.setHours(0, 0, 0, 0);
-          
-          const diffDays = Math.floor((currentDate.getTime() - respDate.getTime()) / (1000 * 60 * 60 * 24));
-          
+
+          const diffDays = Math.floor(
+            (currentDate.getTime() - respDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
+
           if (diffDays === currentStreak) {
             currentStreak++;
           } else if (diffDays === currentStreak + 1 && currentStreak === 0) {
@@ -73,9 +75,11 @@ export const UserStats: React.FC = () => {
         for (let i = 1; i < dates.length; i++) {
           const currentDate = new Date(dates[i - 1]);
           const prevDate = new Date(dates[i]);
-          
-          const diffDays = Math.floor((currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
-          
+
+          const diffDays = Math.floor(
+            (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
+
           if (diffDays === 1) {
             tempStreak++;
           } else {
@@ -90,10 +94,10 @@ export const UserStats: React.FC = () => {
         totalSubmissions: totalSubmissions || 0,
         currentStreak,
         longestStreak,
-        joinDate: user.created_at
+        joinDate: user.created_at,
       });
     } catch (error) {
-      console.error('Error fetching user stats:', error);
+      console.error("Error fetching user stats:", error);
     } finally {
       setLoading(false);
     }
@@ -115,9 +119,9 @@ export const UserStats: React.FC = () => {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'long',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
     });
   };
 

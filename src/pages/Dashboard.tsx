@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useUserResponses } from "../hooks/useResponses";
@@ -13,7 +13,7 @@ export const Dashboard = () => {
   const { user } = useAuth();
   const { responses, loading, refetch } = useUserResponses(user?.id);
   const [editingResponse, setEditingResponse] = useState<Response | null>(null);
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const handleEditResponse = (response: Response) => {
     setEditingResponse(response);
   };
@@ -34,17 +34,11 @@ export const Dashboard = () => {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Prompts
         </Button>
-        <div className="flex justify-between">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Your Writing Dashboard</h1>
-            <p className="text-muted-foreground">
-              Track your progress and manage your responses
-            </p>
-          </div>
-          <div>
-            <Button>Private writing</Button>
-          </div>
-        </div>
+
+        <h1 className="text-3xl font-bold mb-2">Your Writing Dashboard</h1>
+        <p className="text-muted-foreground">
+          Track your progress and manage your responses
+        </p>
       </div>
 
       <UserStats />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Edit3, LogOut, User } from "lucide-react";
+import { Edit3, Lock, LogOut, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
 import { AuthForm } from "../auth/AuthForm";
@@ -47,6 +47,14 @@ export const Header = () => {
               >
                 <User className="h-4 w-4 mr-2" />
                 Dashboard
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/private")}
+              >
+                <Lock className="h-4 w-4 mr-2" />
+                Private Journal
               </Button>
               <Button variant="outline" size="sm" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 mr-2" />

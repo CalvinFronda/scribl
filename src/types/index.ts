@@ -22,6 +22,15 @@ export interface Response {
   updated_at: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  update_at: string;
+  created_at: string;
+}
+
 export interface PublicResponse {
   id: string;
   response_text: string;

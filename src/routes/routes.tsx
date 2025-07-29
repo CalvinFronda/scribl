@@ -1,9 +1,18 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import RootLayout from "./Rootlayout";
+import RootLayout from "./RootLayout";
 
 import { Dashboard } from "@/pages/Dashboard";
-import { requireAuth } from "@/components/auth/auth";
+
 import LandingPage from "@/pages/LandingPage";
+import { RequireAuth } from "@/components/auth/RequireAuth";
+import PrivateJournalPage from "@/pages/PrivateJournalPage";
+
+// src/components/auth/ProtectedRoutes.tsx
+import { Outlet } from "react-router-dom";
+
+function ProtectedRoutes() {
+  return <Outlet />;
+}
 
 export const router = createBrowserRouter([
   {
@@ -14,11 +23,22 @@ export const router = createBrowserRouter([
         index: true,
         element: <LandingPage />,
       },
-
       {
-        path: "dashboard",
-        element: <Dashboard />,
-        loader: requireAuth,
+        element: (
+          <RequireAuth>
+            <ProtectedRoutes />
+          </RequireAuth>
+        ),
+        children: [
+          {
+            path: "dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "private",
+            element: <PrivateJournalPage />,
+          },
+        ],
       },
     ],
   },

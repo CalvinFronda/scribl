@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/Button';
-import { Textarea } from '../ui/Textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import React, { useState } from "react";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "../ui/Button";
+import { Textarea } from "../ui/Textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { submitDailyResponse } from "@/actions/submitDaily";
 
 interface ResponseFormProps {
   promptId: string;
@@ -15,14 +16,14 @@ interface ResponseFormProps {
 export const ResponseForm: React.FC<ResponseFormProps> = ({
   promptId,
   onSubmit,
-  existingResponse = '',
-  responseId
+  existingResponse = "",
+  responseId,
 }) => {
   const [response, setResponse] = useState(existingResponse);
   const [isPublic, setIsPublic] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,32 +37,26 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
       if (responseId) {
         // Update existing response
         const { error } = await supabase
-          .from('responses')
+          .from("responses")
           .update({
             response_text: response.trim(),
             is_public: isPublic,
-            updated_at: new Date().toISOString()
+            type: "daily",
+            updated_at: new Date().toISOString(),
           })
-          .eq('id', responseId);
+          .eq("id", responseId);
 
         if (error) throw error;
       } else {
         // Create new response
-        const { error } = await supabase
-          .from('responses')
-          .insert({
-            user_id: user.id,
-            prompt_id: promptId,
-            response_text: response.trim(),
-            is_public: isPublic
-          });
-
-        if (error) throw error;
+        return await submitDailyResponse(user.id, promptId, response);
       }
 
       onSubmit();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit response');
+      setError(
+        err instanceof Error ? err.message : "Failed to submit response"
+      );
     } finally {
       setLoading(false);
     }
@@ -71,10 +66,10 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
     <Card>
       <CardHeader>
         <CardTitle>
-          {responseId ? 'Edit Your Response' : 'Share Your Writing'}
+          {responseId ? "Edit Your Response" : "Share Your Writing"}
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Textarea
@@ -106,7 +101,7 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
           )}
 
           <Button type="submit" loading={loading} className="w-full">
-            {responseId ? 'Update Response' : 'Submit Response'}
+            {responseId ? "Update Response" : "Submit Response"}
           </Button>
         </form>
       </CardContent>

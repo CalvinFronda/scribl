@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import React, { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 
 interface AuthFormProps {
   onClose: () => void;
@@ -10,8 +10,8 @@ interface AuthFormProps {
 
 export const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +32,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
       }
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Authentication failed');
+      setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -44,7 +44,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>
-            {isSignUp ? 'Create Account' : 'Welcome Back'}
+              {isSignUp ? "Create Account" : "Welcome Back"}
             </CardTitle>
             <button
               onClick={onClose}
@@ -65,7 +65,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
               placeholder="Enter your email"
               required
             />
-            
+
             <Input
               type="password"
               label="Password"
@@ -82,7 +82,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
             )}
 
             <Button type="submit" className="w-full" loading={loading}>
-              {isSignUp ? 'Create Account' : 'Sign In'}
+              {isSignUp ? "Create Account" : "Sign In"}
             </Button>
           </form>
 
@@ -91,7 +91,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
               onClick={() => setIsSignUp(!isSignUp)}
               className="text-primary hover:text-primary/80 text-sm font-medium"
             >
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+              {isSignUp
+                ? "Already have an account? Sign in"
+                : "Don't have an account? Sign up"}
             </button>
           </div>
         </CardContent>
