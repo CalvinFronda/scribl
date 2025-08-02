@@ -1,20 +1,22 @@
 import React, { useState } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../lib/supabase/client";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
 import { Textarea } from "../ui/Textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
-import { submitDailyResponse } from "@/actions/submitDaily";
+import { submitDailyResponse } from "@/lib/supabase/responses";
+import { getLocalStorage, getWordCount, setLocalStorage } from "@/lib/utils";
+import { Prompt } from "@/types";
 
 interface ResponseFormProps {
-  promptId: string;
+  currentPrompt: Prompt;
   onSubmit: () => void;
   existingResponse?: string;
   responseId?: string;
 }
 
 export const ResponseForm: React.FC<ResponseFormProps> = ({
-  promptId,
+  currentPrompt,
   onSubmit,
   existingResponse = "",
   responseId,
@@ -23,7 +25,9 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
   const [isPublic, setIsPublic] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [startTimes, setStartTimes] = useState<Record<string, string>>(() => {
+    return getLocalStorage("startTimes") || {};
+  });
   const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,7 +36,9 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
 
     setLoading(true);
     setError(null);
+    const endTime = new Date().toISOString();
 
+    const wordCount = getWordCount(response);
     try {
       if (responseId) {
         // Update existing response
@@ -49,7 +55,16 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
         if (error) throw error;
       } else {
         // Create new response
-        return await submitDailyResponse(user.id, promptId, response);
+        if (currentPrompt.id) {
+          return await submitDailyResponse(
+            user.id,
+            currentPrompt.id,
+            response,
+            startTimes[currentPrompt.id],
+            endTime,
+            wordCount
+          );
+        }
       }
 
       onSubmit();
@@ -60,6 +75,19 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTextInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (currentPrompt && !startTimes[currentPrompt.id]) {
+      const now = new Date().toISOString();
+      const updated = {
+        ...startTimes,
+        [currentPrompt.id]: now,
+      };
+      setStartTimes(updated);
+      setLocalStorage("startTimes", updated);
+    }
+    setResponse(e.target.value);
   };
 
   return (
@@ -75,7 +103,7 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
           <Textarea
             label="Your Response"
             value={response}
-            onChange={(e) => setResponse(e.target.value)}
+            onChange={(e) => handleTextInput(e)}
             placeholder="Write your response to today's prompt..."
             rows={8}
             required

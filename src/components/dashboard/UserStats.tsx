@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, Flame, TrendingUp, Clock } from "lucide-react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../lib/supabase/client";
 import { useAuth } from "../../contexts/AuthContext";
 import { UserStats as UserStatsType } from "../../types";
 import { Card, CardContent } from "../ui/Card";

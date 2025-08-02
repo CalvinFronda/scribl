@@ -9,6 +9,8 @@ import PrivateJournalPage from "@/pages/PrivateJournalPage";
 
 // src/components/auth/ProtectedRoutes.tsx
 import { Outlet } from "react-router-dom";
+import PrivateHistoryPage from "@/pages/PrivateHistoryPage";
+import PrivatHistorySelectedPage from "@/pages/PrivateHistorySelectedPage";
 
 function ProtectedRoutes() {
   return <Outlet />;
@@ -37,6 +39,14 @@ export const router = createBrowserRouter([
           {
             path: "private",
             element: <PrivateJournalPage />,
+          },
+          {
+            path: "private/history",
+            element: <PrivateHistoryPage />,
+          },
+          {
+            path: "private/history/:id",
+            element: <PrivatHistorySelectedPage />,
           },
         ],
       },

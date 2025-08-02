@@ -25,13 +25,17 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { useState } from "react";
-import { toast } from "sonner";
 
 import { useAuth } from "@/contexts/AuthContext";
 
-import { submitPersonalResponse } from "@/actions/submitPersonal";
+import { submitPersonalResponse } from "@/lib/supabase/responses";
 import { usePrompts } from "@/hooks/usePrompts";
-import { colorMap } from "@/lib/utils";
+import {
+  colorMap,
+  getLocalStorage,
+  setLocalStorage,
+  getWordCount,
+} from "@/lib/utils";
 
 const PrivateJournalPage = () => {
   const [loading, setLoading] = useState(false);
@@ -40,31 +44,38 @@ const PrivateJournalPage = () => {
   const [response, setResponse] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const {
-    currentPrompt,
-    loading: promptLoading,
-    refetch: getRandomPrompt,
-  } = usePrompts();
+  const wordCount = getWordCount(response);
+
+  const { currentPrompt, refetch: getRandomPrompt } = usePrompts();
+
+  const [startTimes, setStartTimes] = useState<Record<string, string>>(() => {
+    return getLocalStorage("startTimes") || {};
+  });
+
   const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !response) return;
+
     setIsSaving(true);
     setLoading(true);
     setError(null);
+
+    const endTime = new Date().toISOString();
     try {
       if (currentPrompt) {
-        await submitPersonalResponse(user.id, currentPrompt.id, response);
-        toast(
-          <div>
-            <div className="font-semibold">Writing saved privately</div>
-            <div>Your thoughts have been saved to your personal journal.</div>
-          </div>
+        await submitPersonalResponse(
+          user.id,
+          currentPrompt.id,
+          response,
+          startTimes[currentPrompt.id],
+          endTime,
+          wordCount
         );
       }
     } catch (err) {
-      console.error(err);
+      console.error("the error", err);
       setError(
         err instanceof Error ? err.message : "Failed to submit response"
       );
@@ -76,10 +87,23 @@ const PrivateJournalPage = () => {
     }
   };
 
-  const wordCount = response
-    .trim()
-    .split(/\s+/)
-    .filter((word) => word.length > 0).length;
+  const handleTextInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (currentPrompt && !startTimes[currentPrompt.id]) {
+      const now = new Date().toISOString();
+      const updated = {
+        ...startTimes,
+        [currentPrompt.id]: now,
+      };
+      setStartTimes(updated);
+      setLocalStorage("startTimes", updated);
+    }
+    setResponse(e.target.value);
+  };
+
+  const handleGetRandomPrompt = () => {
+    getRandomPrompt();
+    setResponse("");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br ">
@@ -143,7 +167,9 @@ const PrivateJournalPage = () => {
                   {currentPrompt?.prompt_categories.map(({ category }) => (
                     <Badge
                       key={category.id}
-                      className={colorMap[category.color]}
+                      className={
+                        colorMap[category.color as keyof typeof colorMap]
+                      }
                     >
                       {category.name}
                     </Badge>
@@ -152,7 +178,7 @@ const PrivateJournalPage = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => getRandomPrompt()}
+                  onClick={() => handleGetRandomPrompt()}
                   className="text-sky-600 hover:text-sky-700"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
@@ -190,7 +216,7 @@ const PrivateJournalPage = () => {
                 <Textarea
                   placeholder="Let your thoughts flow freely... This is your private space to explore ideas, reflect on experiences, and express yourself without any judgment. Take your time and write from the heart."
                   value={response}
-                  onChange={(e) => setResponse(e.target.value)}
+                  onChange={(e) => handleTextInput(e)}
                   className="min-h-[500px] text-base leading-relaxed resize-none focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-white/50"
                 />
 

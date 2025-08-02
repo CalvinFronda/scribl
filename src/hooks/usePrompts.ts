@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../lib/supabase/client";
 import { Prompt, Category } from "../types";
-
-type PromptWithCategories = Prompt & {
-  prompt_categories: {
-    categories: Category;
-  }[];
-};
+import { PromptWithCategories } from "../types";
 
 export const usePrompts = () => {
   const [currentPrompt, setCurrentPrompt] =
@@ -44,7 +39,7 @@ export const usePrompts = () => {
         throw error;
       }
 
-      setCurrentPrompt(data || null);
+      setCurrentPrompt(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch prompt");
     } finally {

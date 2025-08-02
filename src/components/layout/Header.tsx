@@ -4,12 +4,14 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/Button";
 import { AuthForm } from "../auth/AuthForm";
 import { useNavigate } from "react-router";
+import { useLocation } from "react-router";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
   const [showAuthForm, setShowAuthForm] = useState(false);
-  let navigate = useNavigate();
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isOnPrivate = location.pathname === "/private";
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -48,14 +50,26 @@ export const Header = () => {
                 <User className="h-4 w-4 mr-2" />
                 Dashboard
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/private")}
-              >
-                <Lock className="h-4 w-4 mr-2" />
-                Private Journal
-              </Button>
+              {isOnPrivate ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/private/history")}
+                >
+                  <Lock className="h-4 w-4 mr-2" />
+                  View Past Writings
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/private")}
+                >
+                  <Lock className="h-4 w-4 mr-2" />
+                  Private Journal
+                </Button>
+              )}
+
               <Button variant="outline" size="sm" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out

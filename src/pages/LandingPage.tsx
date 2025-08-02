@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { usePrompts } from "../hooks/usePrompts";
 import { usePublicResponses } from "../hooks/useResponses";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../lib/supabase/client";
 import { PromptCard } from "../components/prompts/PromptCard";
 import { ResponseForm } from "../components/responses/ResponseForm";
 import { PublicResponsesList } from "../components/responses/PublicResponsesList";
@@ -141,7 +141,7 @@ const LandingPage = () => {
               </Card>
             ) : (
               <ResponseForm
-                promptId={currentPrompt.id}
+                currentPrompt={currentPrompt}
                 onSubmit={handleResponseSubmit}
               />
             )}

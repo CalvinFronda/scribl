@@ -5,6 +5,66 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function setLocalStorage(key: string, value: any): void {
+  try {
+    const serializedValue = JSON.stringify(value);
+    localStorage.setItem(key, serializedValue);
+    console.log("success", key, serializedValue);
+  } catch (error) {
+    console.error("Error saving to localStorage", error);
+  }
+}
+
+export function getLocalStorage<T>(key: string): T | null {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? (JSON.parse(item) as T) : null;
+  } catch (error) {
+    console.error("Error reading from localStorage", error);
+    return null;
+  }
+}
+
+export function getWordCount(sentence: string) {
+  return sentence
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
+}
+
+export function formatTimeSpent(
+  startTime: string | Date,
+  endTime: string | Date
+): string {
+  const start = new Date(startTime).getTime();
+  const end = new Date(endTime).getTime();
+
+  if (isNaN(start) || isNaN(end) || end <= start) return "0 minutes";
+
+  const diffMs = end - start;
+  const totalMinutes = Math.floor(diffMs / 60000);
+
+  const days = Math.floor(totalMinutes / 1440); // 60 * 24
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+
+  const parts = [];
+  if (days) parts.push(`${days} day${days > 1 ? "s" : ""}`);
+  if (hours) parts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
+  if (minutes || (!days && !hours))
+    parts.push(`${minutes} minute${minutes !== 1 ? "s" : ""}`);
+
+  return parts.join(" ");
+}
+
+export const formatDate = (date: Date): string => {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
 export const colorMap = {
   "green-500": "bg-green-500",
   "rose-500": "bg-rose-500",

@@ -1,6 +1,12 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { Response, PublicResponse } from '../types';
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase/client";
+import {
+  Response,
+  PublicResponse,
+  Prompt,
+  PromptWithCategories,
+  ResponseWithCategories,
+} from "../types";
 
 export const usePublicResponses = (promptId?: string) => {
   const [responses, setResponses] = useState<PublicResponse[]>([]);
@@ -19,31 +25,35 @@ export const usePublicResponses = (promptId?: string) => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('responses')
-        .select(`
+        .from("responses")
+        .select(
+          `
           id,
           response_text,
           created_at,
           user_id
-        `)
-        .eq('prompt_id', promptId)
-        .eq('is_public', true)
-        .order('created_at', { ascending: false })
+        `
+        )
+        .eq("prompt_id", promptId)
+        .eq("is_public", true)
+        .order("created_at", { ascending: false })
         .limit(10);
 
       if (error) throw error;
 
       // Anonymize user data
-      const anonymizedResponses = data.map(response => ({
+      const anonymizedResponses = data.map((response) => ({
         id: response.id,
         response_text: response.response_text,
         created_at: response.created_at,
-        user_email: `User ${response.user_id.slice(-4)}`
+        user_email: `User ${response.user_id.slice(-4)}`,
       }));
 
       setResponses(anonymizedResponses);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch responses');
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch responses"
+      );
     } finally {
       setLoading(false);
     }
@@ -53,7 +63,7 @@ export const usePublicResponses = (promptId?: string) => {
 };
 
 export const useUserResponses = (userId?: string) => {
-  const [responses, setResponses] = useState<Response[]>([]);
+  const [responses, setResponses] = useState<ResponseWithCategories[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,21 +79,32 @@ export const useUserResponses = (userId?: string) => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('responses')
-        .select(`
-          *,
-          prompts (
-            prompt_text,
-            date
-          )
-        `)
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+        .from("responses")
+        .select(
+          `
+    *,
+    prompts (
+      id,
+      prompt_text,
+      date,
+      prompt_categories (
+        category (
+          id,
+          name
+        )
+      )
+    )
+    `
+        )
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setResponses(data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch user responses');
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch user responses"
+      );
     } finally {
       setLoading(false);
     }
