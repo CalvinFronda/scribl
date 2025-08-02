@@ -1,28 +1,33 @@
-import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/Button';
-import { Textarea } from '../ui/Textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import React, { useState } from "react";
+import { supabase } from "../../lib/supabase/client";
+import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "../ui/Button";
+import { Textarea } from "../ui/Textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { submitDailyResponse } from "@/lib/supabase/responses";
+import { getLocalStorage, getWordCount, setLocalStorage } from "@/lib/utils";
+import { Prompt } from "@/types";
 
 interface ResponseFormProps {
-  promptId: string;
+  currentPrompt: Prompt;
   onSubmit: () => void;
   existingResponse?: string;
   responseId?: string;
 }
 
 export const ResponseForm: React.FC<ResponseFormProps> = ({
-  promptId,
+  currentPrompt,
   onSubmit,
-  existingResponse = '',
-  responseId
+  existingResponse = "",
+  responseId,
 }) => {
   const [response, setResponse] = useState(existingResponse);
   const [isPublic, setIsPublic] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+  const [startTimes, setStartTimes] = useState<Record<string, string>>(() => {
+    return getLocalStorage("startTimes") || {};
+  });
   const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,56 +36,74 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
 
     setLoading(true);
     setError(null);
+    const endTime = new Date().toISOString();
 
+    const wordCount = getWordCount(response);
     try {
       if (responseId) {
         // Update existing response
         const { error } = await supabase
-          .from('responses')
+          .from("responses")
           .update({
             response_text: response.trim(),
             is_public: isPublic,
-            updated_at: new Date().toISOString()
+            type: "daily",
+            updated_at: new Date().toISOString(),
           })
-          .eq('id', responseId);
+          .eq("id", responseId);
 
         if (error) throw error;
       } else {
         // Create new response
-        const { error } = await supabase
-          .from('responses')
-          .insert({
-            user_id: user.id,
-            prompt_id: promptId,
-            response_text: response.trim(),
-            is_public: isPublic
-          });
-
-        if (error) throw error;
+        if (currentPrompt.id) {
+          return await submitDailyResponse(
+            user.id,
+            currentPrompt.id,
+            response,
+            startTimes[currentPrompt.id],
+            endTime,
+            wordCount
+          );
+        }
       }
 
       onSubmit();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit response');
+      setError(
+        err instanceof Error ? err.message : "Failed to submit response"
+      );
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTextInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (currentPrompt && !startTimes[currentPrompt.id]) {
+      const now = new Date().toISOString();
+      const updated = {
+        ...startTimes,
+        [currentPrompt.id]: now,
+      };
+      setStartTimes(updated);
+      setLocalStorage("startTimes", updated);
+    }
+    setResponse(e.target.value);
   };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          {responseId ? 'Edit Your Response' : 'Share Your Writing'}
+          {responseId ? "Edit Your Response" : "Share Your Writing"}
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Textarea
             label="Your Response"
             value={response}
-            onChange={(e) => setResponse(e.target.value)}
+            onChange={(e) => handleTextInput(e)}
             placeholder="Write your response to today's prompt..."
             rows={8}
             required
@@ -106,7 +129,7 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
           )}
 
           <Button type="submit" loading={loading} className="w-full">
-            {responseId ? 'Update Response' : 'Submit Response'}
+            {responseId ? "Update Response" : "Submit Response"}
           </Button>
         </form>
       </CardContent>

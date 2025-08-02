@@ -1,43 +1,52 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { AuthContextType, User } from '../types';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "../lib/supabase/client";
+import { AuthContextType, User } from "../types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
+    // Get current session immediately
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ? {
-        id: session.user.id,
-        email: session.user.email!,
-        created_at: session.user.created_at
-      } : null);
-      setLoading(false);
+      setUser(
+        session?.user
+          ? {
+              id: session.user.id,
+              email: session.user.email!,
+              created_at: session.user.created_at,
+            }
+          : null
+      );
+      setLoading(false); // Only run this once here
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ? {
-          id: session.user.id,
-          email: session.user.email!,
-          created_at: session.user.created_at
-        } : null);
-        setLoading(false);
-      }
-    );
+    // Subscribe to future auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(
+        session?.user
+          ? {
+              id: session.user.id,
+              email: session.user.email!,
+              created_at: session.user.created_at,
+            }
+          : null
+      );
+    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -71,9 +80,5 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signOut,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

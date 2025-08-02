@@ -12,14 +12,36 @@ export interface Prompt {
   is_active: boolean;
 }
 
+export interface PromtpCategories {
+  id: number;
+  name: string;
+}
+
 export interface Response {
   id: string;
   user_id: string;
   prompt_id: string;
   response_text: string;
   is_public: boolean;
-  created_at: string;
+  type: string;
+  start_time: string;
+  end_time: string;
+  word_count: number;
   updated_at: string;
+  created_at: string;
+}
+
+export type ResponseWithCategories = Response & {
+  prompts: PromptWithCategories;
+};
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  update_at: string;
+  created_at: string;
 }
 
 export interface PublicResponse {
@@ -43,3 +65,9 @@ export interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
+
+export type PromptWithCategories = Prompt & {
+  prompt_categories: {
+    category: Category;
+  }[];
+};
