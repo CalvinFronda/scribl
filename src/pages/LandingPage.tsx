@@ -130,7 +130,7 @@ const LandingPage = () => {
                       {new Date(userResponse.created_at).toLocaleDateString()}
                       {userResponse.updated_at !== userResponse.created_at &&
                         ` • Updated ${new Date(
-                          userResponse.updated_at
+                          userResponse.updated_at,
                         ).toLocaleDateString()}`}
                     </span>
                     <span className="text-sm text-muted-foreground">

@@ -8,7 +8,7 @@ export async function submitPersonalResponse(
   response: string,
   startTime: string,
   endTime: string,
-  wordCount: number
+  wordCount: number,
 ) {
   return await submitResponse({
     userId,
@@ -27,7 +27,7 @@ export async function submitDailyResponse(
   response: string,
   startTime: string,
   endTime: string,
-  wordCount: number
+  wordCount: number,
 ) {
   return await submitResponse({
     userId,

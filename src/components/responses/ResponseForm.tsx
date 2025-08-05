@@ -62,7 +62,7 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
             response,
             startTimes[currentPrompt.id],
             endTime,
-            wordCount
+            wordCount,
           );
         }
       }
@@ -70,7 +70,7 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
       onSubmit();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to submit response"
+        err instanceof Error ? err.message : "Failed to submit response",
       );
     } finally {
       setLoading(false);

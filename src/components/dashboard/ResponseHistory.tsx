@@ -65,10 +65,10 @@ export const ResponseHistory: React.FC<ResponseHistoryProps> = ({
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h4 className="font-medium mb-1">
-                  {formatDate(response.prompts?.date || response.created_at)}
+                  {formatDate(response.prompt?.date || response.created_at)}
                 </h4>
                 <p className="text-sm text-muted-foreground mb-2">
-                  "{response.prompts?.prompt_text || "Prompt text unavailable"}"
+                  "{response.prompt?.prompt_text || "Prompt text unavailable"}"
                 </p>
               </div>
 

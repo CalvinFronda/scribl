@@ -19,7 +19,7 @@ export const usePrompts = () => {
       const today = new Date().toISOString().split("T")[0];
 
       const { data, error } = await supabase
-        .from("prompts")
+        .from("prompt")
         .select(
           `
     *,
@@ -30,7 +30,7 @@ export const usePrompts = () => {
         color
       )
     )
-  `
+  `,
         )
         .eq("date", today)
         .single();
@@ -64,7 +64,7 @@ export const usePrompts = () => {
         color
       )
     )
-  `
+  `,
         )
         .limit(1)
         .single();
@@ -76,7 +76,7 @@ export const usePrompts = () => {
       setCurrentPrompt(data);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to fetch random prompt"
+        err instanceof Error ? err.message : "Failed to fetch random prompt",
       );
       setCurrentPrompt(null);
     } finally {

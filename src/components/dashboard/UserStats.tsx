@@ -32,7 +32,7 @@ export const UserStats: React.FC = () => {
       // Get responses ordered by date to calculate streaks
       const { data: responses } = await supabase
         .from("responses")
-        .select("created_at, prompts(date)")
+        .select("created_at, prompt(date)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -57,7 +57,8 @@ export const UserStats: React.FC = () => {
           respDate.setHours(0, 0, 0, 0);
 
           const diffDays = Math.floor(
-            (currentDate.getTime() - respDate.getTime()) / (1000 * 60 * 60 * 24)
+            (currentDate.getTime() - respDate.getTime()) /
+              (1000 * 60 * 60 * 24),
           );
 
           if (diffDays === currentStreak) {
@@ -77,7 +78,8 @@ export const UserStats: React.FC = () => {
           const prevDate = new Date(dates[i]);
 
           const diffDays = Math.floor(
-            (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
+            (currentDate.getTime() - prevDate.getTime()) /
+              (1000 * 60 * 60 * 24),
           );
 
           if (diffDays === 1) {

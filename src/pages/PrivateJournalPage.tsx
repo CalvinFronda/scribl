@@ -71,13 +71,13 @@ const PrivateJournalPage = () => {
           response,
           startTimes[currentPrompt.id],
           endTime,
-          wordCount
+          wordCount,
         );
       }
     } catch (err) {
       console.error("the error", err);
       setError(
-        err instanceof Error ? err.message : "Failed to submit response"
+        err instanceof Error ? err.message : "Failed to submit response",
       );
       throw error;
     } finally {

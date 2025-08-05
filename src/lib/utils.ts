@@ -1,3 +1,4 @@
+import { Category, FormattedResponse, ResponseWithCategories } from "@/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -34,7 +35,7 @@ export function getWordCount(sentence: string) {
 
 export function formatTimeSpent(
   startTime: string | Date,
-  endTime: string | Date
+  endTime: string | Date,
 ): string {
   const start = new Date(startTime).getTime();
   const end = new Date(endTime).getTime();
@@ -64,6 +65,26 @@ export const formatDate = (date: Date): string => {
     day: "numeric",
   });
 };
+
+export function formatResponse(raw: ResponseWithCategories): FormattedResponse {
+  const start = raw.start_time;
+  const end = raw.end_time;
+
+  return {
+    id: raw.id,
+    date: formatDate(new Date(raw.prompt.date)),
+    prompt: raw.prompt.prompt_text,
+    category: raw.prompt.prompt_categories.map(
+      (c: { category: Category }) => c.category,
+    ),
+    text: raw.response_text,
+    preview: raw.response_text.slice(0, 250) + "...",
+    timeSpent: formatTimeSpent(start, end),
+    wordCount: raw.word_count,
+    startTime: start,
+    endTime: end,
+  };
+}
 
 export const colorMap = {
   "green-500": "bg-green-500",

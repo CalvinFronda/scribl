@@ -29,7 +29,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 
 import { useUserResponses } from "@/hooks/useResponses";
-import { formatDate, formatTimeSpent } from "@/lib/utils";
+import { colorMap, formatDate, formatTimeSpent } from "@/lib/utils";
 
 export default function PrivateHistoryPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,23 +46,20 @@ export default function PrivateHistoryPage() {
     "all",
     ...Array.from(
       new Set(
-        responses.flatMap((response) =>
-          response.prompts.prompt_categories.map((pc) => pc.category.name)
-        )
-      )
+        responses.flatMap((response) => response.category.map((pc) => pc.name)),
+      ),
     ),
   ];
 
   const filteredResponses = responses.filter((writing) => {
-    const promptText = writing.prompts?.prompt_text || "";
-    const previewText = writing.response_text || "";
+    const promptText = writing.prompt || "";
+    const previewText = writing.preview || "";
 
     const matchesSearch =
       promptText.toLowerCase().includes(searchTerm.toLowerCase()) ||
       previewText.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const categories =
-      writing.prompts?.prompt_categories?.map((pc) => pc.category.name) || [];
+    const categories = writing.category.map((pc) => pc.name) || [];
 
     const matchesCategory =
       selectedCategory === "all" || categories.includes(selectedCategory);
@@ -71,14 +68,12 @@ export default function PrivateHistoryPage() {
   });
 
   const totalWords = responses.reduce(
-    (sum, writing) => sum + (writing.word_count || 0),
-    0
+    (sum, writing) => sum + (writing.wordCount || 0),
+    0,
   );
   const totalTime = responses.reduce((sum, writing) => {
-    const start = writing.start_time
-      ? new Date(writing.start_time).getTime()
-      : 0;
-    const end = writing.end_time ? new Date(writing.end_time).getTime() : 0;
+    const start = writing.startTime ? new Date(writing.startTime).getTime() : 0;
+    const end = writing.endTime ? new Date(writing.endTime).getTime() : 0;
 
     if (!start || !end || end < start) return sum;
 
@@ -202,36 +197,32 @@ export default function PrivateHistoryPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <Badge variant="outline" className="text-xs">
-                          {response.prompts.prompt_categories.map(
-                            (cat) => cat.category.name
-                          )}
-                        </Badge>
+                        {response.category.map((cat) => (
+                          <Badge
+                            variant="secondary"
+                            color={colorMap[cat.color as keyof typeof colorMap]}
+                          >
+                            {cat.name}
+                          </Badge>
+                        ))}
                         <div className="flex items-center space-x-2 text-sm text-gray-500">
                           <Calendar className="h-4 w-4" />
-                          <span>
-                            {formatDate(new Date(response.created_at))}
-                          </span>
+                          <span>{response.date}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-500">
                           <Heart className="h-4 w-4" />
-                          <span>
-                            {formatTimeSpent(
-                              response.start_time,
-                              response.end_time
-                            )}
-                          </span>
+                          <span>{response.timeSpent}</span>
                         </div>
                       </div>
                       <CardTitle className="text-lg mb-2 line-clamp-2">
-                        {response.prompts.prompt_text}
+                        {response.prompt}
                       </CardTitle>
                       <CardDescription className="text-base line-clamp-3 leading-relaxed">
-                        {response.response_text}
+                        {response.text}
                       </CardDescription>
                       <div className="flex items-center justify-between mt-4">
                         <span className="text-sm text-gray-500">
-                          {response.word_count} words
+                          {response.wordCount} words
                         </span>
                         <Button variant="outline" size="sm">
                           Read Full Writing
