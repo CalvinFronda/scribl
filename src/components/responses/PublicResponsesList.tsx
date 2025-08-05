@@ -50,7 +50,7 @@ export const PublicResponsesList: React.FC<PublicResponsesListProps> = ({
                 {response.user_email}
               </span>
               <span className="text-sm text-muted-foreground">
-                {formatDate(new Date(response.created_at))}
+                {formatDate(response.created_at)}
               </span>
             </div>
 

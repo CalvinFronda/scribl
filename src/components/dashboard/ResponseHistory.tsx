@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Edit3, Eye, EyeOff } from "lucide-react";
-import { FormattedResponse, Response } from "../../types";
+import { FormattedResponse } from "../../types";
 import { Card, CardContent } from "../ui/Card";
 import { Button } from "../ui/Button";
 import { LoadingSpinner } from "../ui/LoadingSpinner";

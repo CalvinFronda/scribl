@@ -29,7 +29,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 
 import { useUserResponses } from "@/hooks/useResponses";
-import { colorMap, formatDate, formatTimeSpent } from "@/lib/utils";
+import { colorMap } from "@/lib/utils";
 
 export default function PrivateHistoryPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,8 +46,8 @@ export default function PrivateHistoryPage() {
     "all",
     ...Array.from(
       new Set(
-        responses.flatMap((response) => response.category.map((pc) => pc.name)),
-      ),
+        responses.flatMap((response) => response.category.map((pc) => pc.name))
+      )
     ),
   ];
 
@@ -69,7 +69,7 @@ export default function PrivateHistoryPage() {
 
   const totalWords = responses.reduce(
     (sum, writing) => sum + (writing.wordCount || 0),
-    0,
+    0
   );
   const totalTime = responses.reduce((sum, writing) => {
     const start = writing.startTime ? new Date(writing.startTime).getTime() : 0;

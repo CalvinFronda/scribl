@@ -2,21 +2,13 @@ import React from "react";
 import { Calendar } from "lucide-react";
 import { Prompt } from "../../types";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { formatDate } from "@/lib/utils";
 
 interface PromptCardProps {
   prompt: Prompt;
 }
 
 export const PromptCard: React.FC<PromptCardProps> = ({ prompt }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <Card className="text-center">
       <CardHeader>

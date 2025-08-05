@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { UserStats as UserStatsType } from "../../types";
 import { Card, CardContent } from "../ui/Card";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { formatMonthYear } from "@/lib/utils";
 
 export const UserStats: React.FC = () => {
   const [stats, setStats] = useState<UserStatsType | null>(null);
@@ -57,8 +58,7 @@ export const UserStats: React.FC = () => {
           respDate.setHours(0, 0, 0, 0);
 
           const diffDays = Math.floor(
-            (currentDate.getTime() - respDate.getTime()) /
-              (1000 * 60 * 60 * 24),
+            (currentDate.getTime() - respDate.getTime()) / (1000 * 60 * 60 * 24)
           );
 
           if (diffDays === currentStreak) {
@@ -78,8 +78,7 @@ export const UserStats: React.FC = () => {
           const prevDate = new Date(dates[i]);
 
           const diffDays = Math.floor(
-            (currentDate.getTime() - prevDate.getTime()) /
-              (1000 * 60 * 60 * 24),
+            (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
           );
 
           if (diffDays === 1) {
@@ -120,13 +119,6 @@ export const UserStats: React.FC = () => {
     return null;
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "long",
-      year: "numeric",
-    });
-  };
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <Card className="text-center">
@@ -156,7 +148,9 @@ export const UserStats: React.FC = () => {
       <Card className="text-center">
         <CardContent className="pt-6">
           <Clock className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-          <div className="text-sm font-bold">{formatDate(stats.joinDate)}</div>
+          <div className="text-sm font-bold">
+            {formatMonthYear(stats.joinDate)}
+          </div>
           <div className="text-sm text-muted-foreground">Member Since</div>
         </CardContent>
       </Card>

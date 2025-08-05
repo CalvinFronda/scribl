@@ -35,7 +35,7 @@ export function getWordCount(sentence: string) {
 
 export function formatTimeSpent(
   startTime: string | Date,
-  endTime: string | Date,
+  endTime: string | Date
 ): string {
   const start = new Date(startTime).getTime();
   const end = new Date(endTime).getTime();
@@ -58,11 +58,20 @@ export function formatTimeSpent(
   return parts.join(" ");
 }
 
-export const formatDate = (date: Date): string => {
-  return date.toLocaleDateString("en-US", {
+export const formatDate = (date: string): string => {
+  const d = new Date(date);
+
+  return d.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
+  });
+};
+
+export const formatMonthYear = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
   });
 };
 
@@ -73,10 +82,10 @@ export function formatResponse(raw: ResponseWithCategories): FormattedResponse {
   return {
     id: raw.id,
     promptId: raw.prompt_id,
-    date: formatDate(new Date(raw.prompt.date)),
+    date: formatDate(raw.prompt.date),
     prompt: raw.prompt.prompt_text,
     category: raw.prompt.prompt_categories.map(
-      (c: { category: Category }) => c.category,
+      (c: { category: Category }) => c.category
     ),
     text: raw.response_text,
     preview: raw.response_text.slice(0, 250) + "...",
