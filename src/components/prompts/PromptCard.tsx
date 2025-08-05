@@ -1,7 +1,7 @@
-import React from 'react';
-import { Calendar } from 'lucide-react';
-import { Prompt } from '../../types';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import React from "react";
+import { Calendar } from "lucide-react";
+import { Prompt } from "../../types";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -9,11 +9,11 @@ interface PromptCardProps {
 
 export const PromptCard: React.FC<PromptCardProps> = ({ prompt }) => {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -28,11 +28,9 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt }) => {
         </div>
         <CardTitle>Today's Writing Prompt</CardTitle>
       </CardHeader>
-      
+
       <CardContent>
-        <p className="text-lg leading-relaxed">
-          {prompt.prompt_text}
-        </p>
+        <p className="text-lg leading-relaxed">{prompt.prompt_text}</p>
       </CardContent>
     </Card>
   );

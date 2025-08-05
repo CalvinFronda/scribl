@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               email: session.user.email!,
               created_at: session.user.created_at,
             }
-          : null
+          : null,
       );
       setLoading(false); // Only run this once here
     });
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               email: session.user.email!,
               created_at: session.user.created_at,
             }
-          : null
+          : null,
       );
     });
 

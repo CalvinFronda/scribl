@@ -5,27 +5,32 @@ A beautiful, full-featured writing prompt application built with React, TypeScri
 ## Features
 
 ### 🔐 Authentication
+
 - User registration and login with Supabase Auth
 - Secure user sessions with automatic token refresh
 - Clean error handling for authentication flows
 
 ### ✍️ Daily Prompts
+
 - Automatic daily prompt rotation (updates at 12:00 AM UTC)
 - Rich prompt database with engaging writing challenges
 - Clean, card-based prompt display
 
 ### 📝 Response System
+
 - Submit written responses to daily prompts
 - One response per user per day with editing capabilities
 - Public/private response options
 - Real-time response submission and updates
 
 ### 🌟 Public Features
+
 - Landing page displaying current prompt
 - Anonymous community response feed
 - Responsive design for all devices
 
 ### 📊 User Dashboard
+
 - Personal writing statistics and streak tracking
 - Complete response history with search and filtering
 - Edit previous responses (within time limits)
@@ -42,6 +47,7 @@ A beautiful, full-featured writing prompt application built with React, TypeScri
 ## Setup Instructions
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - A Supabase account ([sign up here](https://supabase.com))
 
@@ -79,6 +85,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ### 4. Configure Supabase Authentication
 
 In your Supabase dashboard:
+
 1. Go to Authentication → Settings
 2. Disable email confirmation (for development)
 3. Set site URL to `http://localhost:5173` for local development
@@ -96,7 +103,8 @@ npm run dev
 
 ### Tables
 
-#### `prompts`
+#### `prompt`
+
 - `id` (uuid, primary key)
 - `prompt_text` (text) - The writing prompt content
 - `date` (date) - Date this prompt is active
@@ -104,6 +112,7 @@ npm run dev
 - `is_active` (boolean) - Whether this prompt is currently active
 
 #### `responses`
+
 - `id` (uuid, primary key)
 - `user_id` (uuid, foreign key) - Reference to auth.users
 - `prompt_id` (uuid, foreign key) - Reference to prompts table
@@ -140,21 +149,25 @@ src/
 ## Key Features Implementation
 
 ### Daily Prompt Rotation
+
 - Database stores prompts with specific dates
 - Frontend queries for today's prompt using current date
 - Automatic switching at midnight UTC
 
 ### User Statistics
+
 - Real-time calculation of writing streaks
 - Total submission counts
 - Join date and progress tracking
 
 ### Response Management
+
 - One response per user per prompt (database constraint)
 - Edit capability with updated timestamps
 - Public/private visibility controls
 
 ### Security
+
 - Row Level Security (RLS) on all tables
 - User isolation through auth.uid()
 - Input validation and sanitization
@@ -162,12 +175,14 @@ src/
 ## Deployment
 
 ### Frontend (Netlify)
+
 1. Connect your GitHub repository to Netlify
 2. Set build command: `npm run build`
 3. Set publish directory: `dist`
 4. Add environment variables in Netlify dashboard
 
 ### Backend (Supabase)
+
 - Already deployed when you create the Supabase project
 - Database migrations run through the SQL editor
 - Automatic scaling and backups included
@@ -191,6 +206,7 @@ src/
 ## Support
 
 For issues and questions:
+
 1. Check the [Supabase documentation](https://supabase.com/docs)
 2. Review the React and TypeScript documentation
 3. Open an issue in this repository

@@ -32,7 +32,20 @@ export interface Response {
 }
 
 export type ResponseWithCategories = Response & {
-  prompts: PromptWithCategories;
+  prompt: PromptWithCategories;
+};
+
+export type FormattedResponse = {
+  id: string;
+  date: string;
+  prompt: string;
+  category: Category[];
+  text: string;
+  preview: string;
+  timeSpent: string;
+  wordCount: number;
+  startTime: string;
+  endTime: string;
 };
 
 export interface Category {

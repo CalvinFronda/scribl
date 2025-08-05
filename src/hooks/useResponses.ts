@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase/client";
-import {
-  Response,
-  PublicResponse,
-  Prompt,
-  PromptWithCategories,
-  ResponseWithCategories,
-} from "../types";
+import { PublicResponse, FormattedResponse } from "../types";
+import { formatResponse } from "@/lib/utils";
 
 export const usePublicResponses = (promptId?: string) => {
   const [responses, setResponses] = useState<PublicResponse[]>([]);
@@ -32,7 +27,7 @@ export const usePublicResponses = (promptId?: string) => {
           response_text,
           created_at,
           user_id
-        `
+        `,
         )
         .eq("prompt_id", promptId)
         .eq("is_public", true)
@@ -52,7 +47,7 @@ export const usePublicResponses = (promptId?: string) => {
       setResponses(anonymizedResponses);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to fetch responses"
+        err instanceof Error ? err.message : "Failed to fetch responses",
       );
     } finally {
       setLoading(false);
@@ -63,7 +58,7 @@ export const usePublicResponses = (promptId?: string) => {
 };
 
 export const useUserResponses = (userId?: string) => {
-  const [responses, setResponses] = useState<ResponseWithCategories[]>([]);
+  const [responses, setResponses] = useState<FormattedResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,7 +78,7 @@ export const useUserResponses = (userId?: string) => {
         .select(
           `
     *,
-    prompts (
+    prompt (
       id,
       prompt_text,
       date,
@@ -94,16 +89,17 @@ export const useUserResponses = (userId?: string) => {
         )
       )
     )
-    `
+    `,
         )
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setResponses(data || []);
+      const res = data.map((item) => formatResponse(item));
+      setResponses(res || []);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to fetch user responses"
+        err instanceof Error ? err.message : "Failed to fetch user responses",
       );
     } finally {
       setLoading(false);
