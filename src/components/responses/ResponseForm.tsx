@@ -6,20 +6,19 @@ import { Textarea } from "../ui/Textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { submitDailyResponse } from "@/lib/supabase/responses";
 import { getLocalStorage, getWordCount, setLocalStorage } from "@/lib/utils";
-import { Prompt } from "@/types";
 
 interface ResponseFormProps {
-  currentPrompt: Prompt;
+  promptId: string;
   onSubmit: () => void;
   existingResponse?: string;
   responseId?: string;
 }
 
 export const ResponseForm: React.FC<ResponseFormProps> = ({
-  currentPrompt,
-  onSubmit,
-  existingResponse = "",
+  promptId,
   responseId,
+  existingResponse = "",
+  onSubmit,
 }) => {
   const [response, setResponse] = useState(existingResponse);
   const [isPublic, setIsPublic] = useState(true);
@@ -55,12 +54,12 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
         if (error) throw error;
       } else {
         // Create new response
-        if (currentPrompt.id) {
+        if (promptId) {
           return await submitDailyResponse(
             user.id,
-            currentPrompt.id,
+            promptId,
             response,
-            startTimes[currentPrompt.id],
+            startTimes[promptId],
             endTime,
             wordCount,
           );
@@ -78,11 +77,11 @@ export const ResponseForm: React.FC<ResponseFormProps> = ({
   };
 
   const handleTextInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (currentPrompt && !startTimes[currentPrompt.id]) {
+    if (promptId && !startTimes[promptId]) {
       const now = new Date().toISOString();
       const updated = {
         ...startTimes,
-        [currentPrompt.id]: now,
+        [promptId]: now,
       };
       setStartTimes(updated);
       setLocalStorage("startTimes", updated);

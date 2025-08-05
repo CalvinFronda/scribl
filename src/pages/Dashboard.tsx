@@ -6,15 +6,16 @@ import { UserStats } from "../components/dashboard/UserStats";
 import { ResponseHistory } from "../components/dashboard/ResponseHistory";
 import { ResponseForm } from "../components/responses/ResponseForm";
 import { Button } from "../components/ui/Button";
-import { Response } from "../types";
+import { FormattedResponse } from "../types";
 import { useNavigate } from "react-router";
 
 export const Dashboard = () => {
   const { user } = useAuth();
   const { responses, loading, refetch } = useUserResponses(user?.id);
-  const [editingResponse, setEditingResponse] = useState<Response | null>(null);
+  const [editingResponse, setEditingResponse] =
+    useState<FormattedResponse | null>(null);
   const navigate = useNavigate();
-  const handleEditResponse = (response: Response) => {
+  const handleEditResponse = (response: FormattedResponse) => {
     setEditingResponse(response);
   };
 
@@ -32,7 +33,7 @@ export const Dashboard = () => {
           onClick={() => navigate("/")}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Prompts
+          Back to Today's Prompt
         </Button>
 
         <h1 className="text-3xl font-bold mb-2">Your Writing Dashboard</h1>
@@ -57,9 +58,9 @@ export const Dashboard = () => {
           </div>
 
           <ResponseForm
-            promptId={editingResponse.prompt_id}
+            promptId={editingResponse.promptId}
             responseId={editingResponse.id}
-            existingResponse={editingResponse.response_text}
+            existingResponse={editingResponse.text}
             onSubmit={handleResponseUpdate}
           />
         </div>

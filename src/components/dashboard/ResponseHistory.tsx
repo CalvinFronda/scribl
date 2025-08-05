@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Edit3, Eye, EyeOff } from "lucide-react";
-import { Response } from "../../types";
+import { FormattedResponse, Response } from "../../types";
 import { Card, CardContent } from "../ui/Card";
 import { Button } from "../ui/Button";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { formatDate } from "@/lib/utils";
 
 interface ResponseHistoryProps {
-  responses: Response[];
+  responses: FormattedResponse[];
   loading: boolean;
-  onEditResponse: (response: Response) => void;
+  onEditResponse: (response: FormattedResponse) => void;
 }
 
 export const ResponseHistory: React.FC<ResponseHistoryProps> = ({
@@ -17,20 +18,6 @@ export const ResponseHistory: React.FC<ResponseHistoryProps> = ({
   onEditResponse,
 }) => {
   const [expandedResponse, setExpandedResponse] = useState<string | null>(null);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const truncateText = (text: string, maxLength: number = 150) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
-  };
 
   if (loading) {
     return (
@@ -59,30 +46,22 @@ export const ResponseHistory: React.FC<ResponseHistoryProps> = ({
     <div className="space-y-4">
       <h3 className="text-xl font-bold mb-4">Your Writing History</h3>
 
-      {responses.map((response: any) => (
+      {responses.map((response: FormattedResponse) => (
         <Card key={response.id} className="hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex justify-between items-start mb-3">
               <div>
-                <h4 className="font-medium mb-1">
-                  {formatDate(response.prompt?.date || response.created_at)}
-                </h4>
+                <h4 className="font-medium mb-1">{response.date}</h4>
                 <p className="text-sm text-muted-foreground mb-2">
-                  "{response.prompt?.prompt_text || "Prompt text unavailable"}"
+                  "{response.prompt || "Prompt text unavailable"}"
                 </p>
               </div>
 
               <div className="flex items-center space-x-2">
-                {response.is_public ? (
-                  <Eye
-                    className="h-4 w-4 text-green-600"
-                    title="Public response"
-                  />
+                {response.isPublic ? (
+                  <Eye className="h-4 w-4 text-green-600" />
                 ) : (
-                  <EyeOff
-                    className="h-4 w-4 text-muted-foreground"
-                    title="Private response"
-                  />
+                  <EyeOff className="h-4 w-4 text-muted-foreground" />
                 )}
 
                 <Button
@@ -99,8 +78,8 @@ export const ResponseHistory: React.FC<ResponseHistoryProps> = ({
             <div>
               {expandedResponse === response.id ? (
                 <div>
-                  <p className="leading-relaxed mb-3">
-                    {response.response_text}
+                  <p className="whitespace-pre-wrap leading-relaxed mb-3">
+                    {response.text}
                   </p>
                   <button
                     onClick={() => setExpandedResponse(null)}
@@ -111,10 +90,8 @@ export const ResponseHistory: React.FC<ResponseHistoryProps> = ({
                 </div>
               ) : (
                 <div>
-                  <p className="leading-relaxed mb-3">
-                    {truncateText(response.response_text)}
-                  </p>
-                  {response.response_text.length > 150 && (
+                  <p className="leading-relaxed mb-3">{response.preview}</p>
+                  {response.text.length > 150 && (
                     <button
                       onClick={() => setExpandedResponse(response.id)}
                       className="text-primary hover:text-primary/80 text-sm font-medium"
@@ -128,9 +105,9 @@ export const ResponseHistory: React.FC<ResponseHistoryProps> = ({
 
             <div className="flex justify-between items-center mt-4 pt-3 border-t">
               <span className="text-xs text-muted-foreground">
-                {response.updated_at !== response.created_at
-                  ? `Updated ${formatDate(response.updated_at)}`
-                  : `Submitted ${formatDate(response.created_at)}`}
+                {response.updatedAt !== response.endTime
+                  ? `Updated ${formatDate(new Date(response.updatedAt))}`
+                  : `Submitted ${formatDate(new Date(response.endTime))}`}
               </span>
             </div>
           </CardContent>

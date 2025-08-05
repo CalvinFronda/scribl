@@ -121,7 +121,7 @@ const LandingPage = () => {
                   <CardTitle>Your Response</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="leading-relaxed mb-4">
+                  <p className="whitespace-pre-wrap leading-relaxed mb-4">
                     {userResponse.response_text}
                   </p>
                   <div className="flex items-center justify-between">

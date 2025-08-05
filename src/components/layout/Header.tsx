@@ -32,7 +32,7 @@ export const Header = () => {
     <header className="border-b bg-background px-4 py-4">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
         <div
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 cursor-pointer"
           onClick={() => navigate("/")}
         >
           <Edit3 className="h-8 w-8 text-primary" />

@@ -72,6 +72,7 @@ export function formatResponse(raw: ResponseWithCategories): FormattedResponse {
 
   return {
     id: raw.id,
+    promptId: raw.prompt_id,
     date: formatDate(new Date(raw.prompt.date)),
     prompt: raw.prompt.prompt_text,
     category: raw.prompt.prompt_categories.map(
@@ -80,9 +81,11 @@ export function formatResponse(raw: ResponseWithCategories): FormattedResponse {
     text: raw.response_text,
     preview: raw.response_text.slice(0, 250) + "...",
     timeSpent: formatTimeSpent(start, end),
+    isPublic: raw.is_public,
     wordCount: raw.word_count,
     startTime: start,
     endTime: end,
+    updatedAt: raw.updated_at,
   };
 }
 

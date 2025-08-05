@@ -3,6 +3,7 @@ import { MessageCircle } from "lucide-react";
 import { PublicResponse } from "../../types";
 import { Card, CardContent } from "../ui/Card";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { formatDate } from "@/lib/utils";
 
 interface PublicResponsesListProps {
   responses: PublicResponse[];
@@ -13,15 +14,6 @@ export const PublicResponsesList: React.FC<PublicResponsesListProps> = ({
   responses,
   loading,
 }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   if (loading) {
     return (
       <Card className="text-center">
@@ -58,11 +50,13 @@ export const PublicResponsesList: React.FC<PublicResponsesListProps> = ({
                 {response.user_email}
               </span>
               <span className="text-sm text-muted-foreground">
-                {formatDate(response.created_at)}
+                {formatDate(new Date(response.created_at))}
               </span>
             </div>
 
-            <p className="leading-relaxed">{response.response_text}</p>
+            <p className="whitespace-pre-wrap leading-relaxed">
+              {response.response_text}
+            </p>
           </CardContent>
         </Card>
       ))}

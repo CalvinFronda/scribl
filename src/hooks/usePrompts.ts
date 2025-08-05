@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase/client";
-import { Prompt, Category } from "../types";
+
 import { PromptWithCategories } from "../types";
 
 export const usePrompts = () => {

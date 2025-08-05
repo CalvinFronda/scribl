@@ -37,15 +37,18 @@ export type ResponseWithCategories = Response & {
 
 export type FormattedResponse = {
   id: string;
+  promptId: string;
   date: string;
   prompt: string;
   category: Category[];
   text: string;
   preview: string;
   timeSpent: string;
+  isPublic: boolean;
   wordCount: number;
   startTime: string;
   endTime: string;
+  updatedAt: string;
 };
 
 export interface Category {
